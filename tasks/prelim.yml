@@ -4,7 +4,7 @@
   stat:
       path: /etc/snmp/snmpd.conf
   register: snmpconf_test
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -18,7 +18,7 @@
   set_fact:
       gpg_key_url: http://mirror.centos.org/centos/RPM-GPG-KEY-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}
   when: "ansible_distribution == 'CentOS'"
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - V-38476
@@ -29,7 +29,7 @@
   set_fact:
       gpg_key_url: https://www.redhat.com/security/fd431d51.txt
   when: "ansible_distribution == 'RedHat'"
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - V-38476
@@ -41,7 +41,7 @@
   command: "awk -F: '{print $1}' /etc/passwd"
   register: users
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -51,7 +51,7 @@
       awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ {print $1}' /etc/shadow
   register: unlocked_accounts
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -62,7 +62,7 @@
       awk -F: '$1 !~ /^root$/ && $2 !~ /^[!*]/ {print $1}' /etc/shadow | xargs -I{} grep {} /etc/passwd | awk -F: '$3 < 500 {print $1}'
   register: unlocked_sys_accounts
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -72,7 +72,7 @@
   shell: "grep -Ev '/home|root' /etc/passwd | cut -d : -f 1"
   register: system_users
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -83,7 +83,7 @@
   shell: "chkconfig --list | sed '/^$/ d ; /xinetd based services:/ d ; /^\t/ d' | awk '{print $1}'"
   register: sysv_services
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -93,7 +93,7 @@
   shell: "chkconfig --list | sed -n '/^\t/,$p' | sed 's/\t//' | cut -d : -f 1"
   register: xinetd_services
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - cat2
@@ -104,7 +104,7 @@
   shell: grep -Pv "/(sh|nologin|dash)" /etc/shells | sed -r 's#/((bin|sbin|usr)/)+##'
   register: shells
   changed_when: false
-  always_run: yes
+  check_mode: no
   tags:
       - cat3
       - umask
@@ -129,7 +129,7 @@
 - name: "PRELIM | Get list of rsyslog genarated log files"
   shell: "grep -e '/' /etc/rsyslog.conf /etc/rsyslog.d/* | grep -v IncludeConfig | sed 's/-//'| awk 'NF==2 {print $2}'"
   changed_when: no
-  always_run: yes
+  check_mode: no
   register: rsyslog_logfiles
   tags:
       - cat2
@@ -163,7 +163,7 @@
 - name: "PRELIM | Get path of auditd log file"
   shell: "grep '^log_file' /etc/audit/auditd.conf | sed s/^[^\\/]*//"
   changed_when: no
-  always_run: yes
+  check_mode: no
   register: auditd_logfile
   tags:
       - cat2

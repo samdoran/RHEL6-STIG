@@ -1,9 +1,8 @@
----
 # CAT I Findings
 - name: "HIGH | V-38462 | AUDIT | The RPM package management tool must cryptographically verify the authenticity of all software packages during installation"
   command: grep nosignature /etc/rpmrc /usr/lib/rpm/rpmrc /usr/lib/rpm/redhat/rpmrc ~root/.rpmrc
   register: rpm_sig_audit
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -35,7 +34,7 @@
 - name: "HIGH | V-38476 | AUDIT | Vendor-provided cryptographic certificates must be installed to verify the integrity of system software"
   command: rpm -q gpg-pubkey
   register: rpm_key_audit
-  always_run: yes
+  check_mode: no
   changed_when: no
   tags:
       - cat1
@@ -59,7 +58,7 @@
   stat:
       path: /etc/hosts.equiv
   register: hosts_equiv_audit
-  always_run: yes
+  check_mode: no
   tags:
       - cat1
       - high
@@ -82,7 +81,7 @@
   stat:
       path: ~{{ item }}/.rhosts
   register: rhosts_audit
-  always_run: yes
+  check_mode: no
   with_items: "{{ users.stdout_lines }}"
   tags:
       - cat1
@@ -106,7 +105,7 @@
 - name: "HIGH | V-38497 | AUDIT | The system must not have accounts configured with blank or null passwords"
   command: grep nullok /etc/pam.d/system-auth
   changed_when: false
-  always_run: yes
+  check_mode: no
   ignore_errors: yes
   register: nullok_audit
   tags:
@@ -130,7 +129,7 @@
 - name: "HIGH | V-38587 | AUDIT | The telnet-server package must not be installed"
   command: rpm -q telnet-server
   ignore_errors: yes
-  always_run: yes
+  check_mode: no
   changed_when: no
   register: telnet_server_audit
   tags:
@@ -157,7 +156,7 @@
   command: chkconfig "telnet" --list
   register: telnet_service_audit
   changed_when: false
-  always_run: yes
+  check_mode: no
   ignore_errors: yes
   tags:
       - cat1
@@ -183,7 +182,7 @@
 
 - name: "HIGH | V-38591 | AUDIT | The rsh-server package must not be installed"
   command: rpm -q rsh-server
-  always_run: yes
+  check_mode: no
   register: rsh_server_audit
   changed_when: no
   ignore_errors: yes
@@ -204,7 +203,7 @@
   command: chkconfig 'rsh' --list
   register: rsh_service_audit
   changed_when: false
-  always_run: yes
+  check_mode: no
   ignore_errors: yes
   tags:
       - cat1
@@ -233,7 +232,7 @@
   command: service rexec status
   ignore_errors: yes
   register: rexec_status_audit
-  always_run: yes
+  check_mode: no
   changed_when: no
   tags:
       - cat1
@@ -258,7 +257,7 @@
   command: service rlogin status
   ignore_errors: yes
   register: rlogin_status_audit
-  always_run: yes
+  check_mode: no
   changed_when: no
   tags:
       - cat1
@@ -283,7 +282,7 @@
   command: grep "Protocol 2" /etc/ssh/sshd_config
   register: proto2_audit
   ignore_errors: yes
-  always_run: yes
+  check_mode: no
   changed_when: no
   tags:
       - cat1
@@ -309,7 +308,7 @@
 - name: "HIGH | V-38614 | AUDIT | The SSH daemon must not allow authentication using an empty password"
   command: grep "PermitEmptyPasswords yes" /etc/ssh/sshd_config
   ignore_errors: yes
-  always_run: yes
+  check_mode: no
   changed_when: false
   register: ssh_empty_pass_audit
   tags:
@@ -336,7 +335,7 @@
   shell: grep -v "^#" /etc/snmp/snmpd.conf| grep public
   register: snmpd_audit
   failed_when: snmpd_audit.rc not in [0,1]
-  always_run: yes
+  check_mode: no
   when: snmpconf_test.stat.exists
   changed_when: no
   tags:
@@ -367,7 +366,7 @@
   command: grep "exec /sbin/shutdown" /etc/init/control-alt-delete.override
   register: ctrl_alt_del_audit
   ignore_errors: yes
-  always_run: yes
+  check_mode: no
   changed_when: no
   tags:
       - cat1
@@ -395,7 +394,7 @@
 - name: "HIGH | V-38701 | AUDIT | The TFTP daemon must operate in secure mode which provides access only to a single directory on the host file system"
   command: grep "server_args = -s" /etc/xinetd.d/tftp
   register: tftp_audit
-  always_run: yes
+  check_mode: no
   when: "'tftp' in xinetd_services.stdout_lines"
   ignore_errors: yes
   tags:
